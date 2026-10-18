@@ -1,0 +1,5 @@
+.git
+.DS_Store
+*.blend
+*.blend1
+output/
