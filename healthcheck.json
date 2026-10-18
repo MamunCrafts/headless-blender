@@ -1,0 +1,8 @@
+{
+  "input": {
+    "frames": "1",
+    "samples": 16,
+    "resolution": "320x240",
+    "device": "AUTO"
+  }
+}

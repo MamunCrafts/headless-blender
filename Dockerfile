@@ -22,6 +22,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libxkbcommon0 libxkbcommon-x11-0 libsm6 libice6 \
         libgl1 libegl1 libglx0 libgomp1 \
         openssh-server \
+        python3 python3-pip \
+    && pip3 install --no-cache-dir "runpod>=1.7,<2" \
     && rm -rf /var/lib/apt/lists/* \
     # Host keys must be unique per pod; start.sh generates them at runtime
     && rm -f /etc/ssh/ssh_host_*
@@ -34,13 +36,15 @@ RUN wget -q "https://download.blender.org/release/Blender${BLENDER_SERIES}/blend
     && blender -b --version
 
 WORKDIR /app
-COPY render.py start.sh /app/
+COPY render.py start.sh handler.py /app/
 RUN chmod +x /app/start.sh
 
-# Default render settings; override in the RunPod template's environment variables
+# Pod-mode render settings (only used when the start command is /app/start.sh)
 ENV BLEND_FILE="" \
     OUTPUT_DIR=/workspace/output \
     RENDER_ARGS="" \
     EXIT_ON_DONE=0
 
-CMD ["/app/start.sh"]
+# Serverless worker by default; for a regular GPU pod set the container
+# start command to /app/start.sh
+CMD ["python3", "-u", "/app/handler.py"]
